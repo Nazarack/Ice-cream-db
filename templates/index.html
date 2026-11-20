@@ -1,0 +1,56 @@
+
+```html
+{% extends "base.html" %}
+
+{% block title %}Dashboard | SweetStock{% endblock %}
+
+{% block content %}
+
+<h1>Dashboard</h1>
+<p>Welcome to your SweetStock overview.</p>
+
+<div class="dashboard-stats">
+
+    <div class="product-card">
+        <h3>Total Products</h3>
+        <h2>{{ total_products }}</h2>
+    </div>
+
+    <div class="product-card">
+        <h3>Available Stock</h3>
+        <h2>{{ total_stock }}</h2>
+        <p>Units</p>
+    </div>
+
+    <div class="product-card">
+        <h3>Production Batches</h3>
+        <h2>{{ total_batches }}</h2>
+    </div>
+
+</div>
+
+<section>
+    <h2>Recent Production</h2>
+
+    {% for batch in recent_batches %}
+
+        <div class="product-card">
+            <h3>{{ batch.product_name }}</h3>
+
+            <p>Production Date: {{ batch.production_date }}</p>
+
+            <p>Quantity Produced: {{ batch.quantity_produced }}</p>
+
+            <p>Currently Available: {{ batch.current_quantity }}</p>
+        </div>
+
+    {% else %}
+
+        <p>No production recorded yet.</p>
+
+    {% endfor %}
+
+</section>
+
+{% endblock %}
+```

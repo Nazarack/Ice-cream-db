@@ -1,0 +1,94 @@
+```html
+{% extends "base.html" %}
+
+{% block title %}Production | SweetStock{% endblock %}
+
+{% block content %}
+
+<h1>Production</h1>
+<p>Record new production batches and monitor previous production.</p>
+
+<section>
+    <h2>Add Production Batch</h2>
+
+    <form action="{{ url_for('add_batch') }}" method="POST">
+
+        <label for="product_id">Choose an Existing Product</label>
+
+        <select name="product_id" id="product_id">
+            <option value="">Choose an existing product</option>
+
+            {% for product in products %}
+                <option value="{{ product.id }}">
+                    {{ product.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <p>OR create a new product directly here:</p>
+
+        <label for="new_product_name">New Product Name</label>
+        <input
+            type="text"
+            name="new_product_name"
+            id="new_product_name"
+            placeholder="Enter new product name"
+        >
+
+        <label for="new_product_category">New Product Category</label>
+
+        <select name="new_product_category" id="new_product_category">
+            <option value="">Choose a category</option>
+            <option value="Ice Cream">Ice Cream</option>
+            <option value="Sweets">Sweets</option>
+            <option value="Cakes">Cakes</option>
+            <option value="Mini Ice Creams">Mini Ice Creams</option>
+            <option value="Other">Other</option>
+        </select>
+
+        <label for="production_date">Production Date</label>
+        <input type="date" name="production_date" id="production_date" required>
+
+        <label for="estimated_expiry">Estimated Expiration Date</label>
+        <input type="date" name="estimated_expiry" id="estimated_expiry">
+
+        <label for="quantity">Quantity Produced</label>
+        <input type="number" name="quantity" id="quantity" min="1" required>
+
+        <button type="submit">Add Batch</button>
+
+    </form>
+</section>
+
+<section>
+    <h2>Production History</h2>
+
+    {% for batch in batches %}
+
+        <div class="product-card">
+
+            <h3>{{ batch.product_name }}</h3>
+
+            <p>Production Date: {{ batch.production_date }}</p>
+
+            <p>
+                Estimated Expiration:
+                {{ batch.estimated_expiry or "Not specified" }}
+            </p>
+
+            <p>Quantity Produced: {{ batch.quantity_produced }}</p>
+
+            <p>Currently Available: {{ batch.current_quantity }}</p>
+
+        </div>
+
+    {% else %}
+
+        <p>No production batches recorded yet.</p>
+
+    {% endfor %}
+
+</section>
+
+{% endblock %}
+```

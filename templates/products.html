@@ -1,0 +1,291 @@
+
+{% extends "base.html" %}
+
+{% block title %}Products | SweetStock{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <span class="eyebrow">PRODUCT MANAGEMENT</span>
+        <h1>Product Collection</h1>
+        <p>Manage your products, production dates and stock.</p>
+    </div>
+</div>
+
+<!-- ADD PRODUCT -->
+<section class="add-product-section">
+
+    <details class="add-product-panel">
+
+        <summary class="add-product-summary">
+            <span>
+                <span class="plus-icon">+</span>
+                Add a New Product
+            </span>
+            <span class="expand-icon">⌄</span>
+        </summary>
+
+        <form
+            action="{{ url_for('add_product') }}"
+            method="POST"
+            class="product-form"
+        >
+
+            <label for="name">Product Name</label>
+
+            <input
+                type="text"
+                name="name"
+                id="name"
+                placeholder="e.g. Chocolate Ice Cream"
+                required
+            >
+
+            <label for="category">Category</label>
+
+            <select name="category" id="category" required>
+                <option value="">Choose a category</option>
+                <option value="Ice Cream">Ice Cream</option>
+                <option value="Sweets">Sweets</option>
+                <option value="Cakes">Cakes</option>
+                <option value="Mini Ice Creams">Mini Ice Creams</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <button type="submit" class="primary-button">
+                Add Product
+            </button>
+
+        </form>
+
+    </details>
+
+</section>
+
+
+<!-- PRODUCT COLLECTION -->
+<section class="products-section">
+
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">YOUR INVENTORY</span>
+            <h2>Your Products</h2>
+        </div>
+
+        <span class="product-count">
+            {{ products|length }} products
+        </span>
+    </div>
+
+
+    <div class="products-grid">
+
+        {% for product in products %}
+
+            <details class="premium-product-card">
+
+                <!-- CLICKABLE PRODUCT HEADER -->
+
+                <summary class="premium-product-summary">
+
+                    <div class="product-main-info">
+
+                        <span class="product-category">
+                            {{ product.category }}
+                        </span>
+
+                        <h3>{{ product.name }}</h3>
+
+                        <span class="product-stock">
+                            {{ product.total_quantity }} units available
+                        </span>
+
+                    </div>
+
+                    <div class="product-expand-icon">
+                        +
+                    </div>
+
+                </summary>
+
+
+                <!-- EXPANDED PRODUCT OPTIONS -->
+
+                <div class="product-expanded-content">
+
+                    <div class="product-information">
+
+                        <div class="information-item">
+                            <span>Production batches</span>
+                            <strong>{{ product.batch_count }}</strong>
+                        </div>
+
+                        <div class="information-item">
+                            <span>Available stock</span>
+                            <strong>{{ product.total_quantity }}</strong>
+                        </div>
+
+                    </div>
+
+
+                    <!-- DATES -->
+
+                    <details class="product-action-panel">
+
+                        <summary class="action-button dates-button">
+                            <span>📅 View Dates</span>
+                            <span>+</span>
+                        </summary>
+
+                        <div class="action-content">
+
+                            {% for batch in product.batches %}
+
+                                <div class="batch-date-card">
+
+                                    <h4>Production Batch #{{ batch.id }}</h4>
+
+                                    <p>
+                                        Production Date:
+                                        <strong>
+                                            {{ batch.production_date }}
+                                        </strong>
+                                    </p>
+
+                                    <p>
+                                        Expiration Date:
+                                        <strong>
+                                            {{ batch.estimated_expiry or "Not specified" }}
+                                        </strong>
+                                    </p>
+
+                                    <p>
+                                        Quantity Produced:
+                                        {{ batch.quantity_produced }}
+                                    </p>
+
+                                    <p>
+                                        Currently Available:
+                                        {{ batch.current_quantity }}
+                                    </p>
+
+                                </div>
+
+                            {% else %}
+
+                                <p class="empty-message">
+                                    No production batches recorded for this product yet.
+                                </p>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </details>
+
+
+                    <!-- EDIT PRODUCT -->
+
+                    <details class="product-action-panel">
+
+                        <summary class="action-button edit-button">
+                            <span>✎ Edit Product</span>
+                            <span>+</span>
+                        </summary>
+
+                        <div class="action-content">
+
+                            <form
+                                action="{{ url_for('edit_product', product_id=product.id) }}"
+                                method="POST"
+                                class="product-form"
+                            >
+
+                                <label>Product Name</label>
+
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value="{{ product.name }}"
+                                    required
+                                >
+
+                                <label>Category</label>
+
+                                <select name="category" required>
+
+                                    <option value="Ice Cream"
+                                        {% if product.category == "Ice Cream" %}selected{% endif %}>
+                                        Ice Cream
+                                    </option>
+
+                                    <option value="Sweets"
+                                        {% if product.category == "Sweets" %}selected{% endif %}>
+                                        Sweets
+                                    </option>
+
+                                    <option value="Cakes"
+                                        {% if product.category == "Cakes" %}selected{% endif %}>
+                                        Cakes
+                                    </option>
+
+                                    <option value="Mini Ice Creams"
+                                        {% if product.category == "Mini Ice Creams" %}selected{% endif %}>
+                                        Mini Ice Creams
+                                    </option>
+
+                                    <option value="Other"
+                                        {% if product.category == "Other" %}selected{% endif %}>
+                                        Other
+                                    </option>
+
+                                </select>
+
+                                <button type="submit" class="primary-button">
+                                    Save Changes
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </details>
+
+
+                    <!-- DELETE PRODUCT -->
+
+                    <form
+                        action="{{ url_for('delete_product', product_id=product.id) }}"
+                        method="POST"
+                        onsubmit="return confirm('Are you sure you want to delete this product and all its production batches?');"
+                    >
+
+                        <button
+                            type="submit"
+                            class="action-button delete-button"
+                        >
+                            <span>Delete Product</span>
+                            <span>×</span>
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </details>
+
+        {% else %}
+
+            <div class="empty-products">
+                <h3>Your collection is empty</h3>
+                <p>Add your first product to get started.</p>
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endblock %}
